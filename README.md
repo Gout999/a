@@ -42,12 +42,7 @@ CityU LearnSphere 是一个专为香港城市大学师生设计的AI驱动个人
 - **功能**: 快速构建Web应用界面和功能逻辑
 - **AI辅助**: 利用CodeBuddy的AI代码补全功能优化开发效率
 
-### 2. CNB代码平台 (https://cnb.cool)
-- **用途**: Git代码仓库和版本管理
-- **功能**: 云原生构建和代码托管
-- **部署**: 基于Docker容器的云原生部署方案
-
-### 3. Cloud Studio (https://cloudstudio.net)
+### 2. Cloud Studio (https://cloudstudio.net)
 - **用途**: 应用部署和展示平台
 - **功能**: 持续迭代和最终项目提交
 - **资源**: 利用免费算力资源进行开发和测试
