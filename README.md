@@ -200,40 +200,5 @@ CityU-LearnSphere/
 2. **数据集成**: 接入CityU图书馆和学术资源
 3. **社区建设**: 建立用户社区和知识分享平台
 
-### 长期目标 (6-12个月)
-1. **平台化发展**: 发展为完整的教育科技平台
-2. **多校推广**: 推广到其他香港高校
-3. **商业化**: 探索可持续的商业模式
-
-## 👥 团队信息
-
-**开发者**: [您的姓名]
-**学校**: 香港城市大学 (City University of Hong Kong)
-**专业**: [您的专业]
-**联系方式**: [您的邮箱]
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
-
-## 🙏 致谢
-
-感谢以下平台和工具的支持：
-- **CodeBuddy IDE**: 提供强大的AI辅助开发环境
-- **CNB代码平台**: 提供可靠的代码托管和云原生构建服务
-- **Cloud Studio**: 提供免费的云端开发和部署资源
-- **DeepSeek**: 提供先进的AI对话API服务
-- **香港城市大学**: 提供丰富的文化和学术背景
-
-## 📞 联系我们
-
-如有任何问题或建议，欢迎通过以下方式联系：
-
-- **项目仓库**: https://cnb.cool/your-username/cityu-learnsphere
-- **演示地址**: https://cloudstudio.net/your-space/cityu-learnsphere
-- **邮箱**: your-email@cityu.edu.hk
-- **微信**: your-wechat-id
-
----
 
 **CityU LearnSphere** - 让学习更智能，让知识更有趣！🎓✨
