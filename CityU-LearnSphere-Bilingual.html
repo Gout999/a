@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityU LearnSphere - AI-Driven Personal Knowledge Management Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FF8C00 0%, #8B0000 100%);
+            min-height: 100vh; color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 20px; margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); text-align: center;
+        }
+        .logo { font-size: 2.5rem; font-weight: bold; color: #8B0000; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
+        .nav-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .nav-btn {
+            background: #DAA520; color: white; border: none; padding: 12px 24px;
+            border-radius: 25px; cursor: pointer; font-size: 1rem;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background: #B8860B; transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
+        }
+        .content-area {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .feature-card {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFE4E1 100%);
+            border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease; cursor: pointer;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 15px; color: #8B0000; }
+        .feature-title { font-size: 1.3rem; font-weight: bold; color: #8B0000; margin-bottom: 10px; }
+        .feature-desc { color: #666; line-height: 1.6; }
+        .login-form { max-width: 400px; margin: 0 auto; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; }
+        .form-input {
+            width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb;
+            border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease;
+        }
+        .form-input:focus { outline: none; border-color: #8B0000; }
+        .btn-primary {
+            width: 100%; background: #DAA520; color: white; border: none;
+            padding: 14px; border-radius: 8px; font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.3s ease;
+        }
+        .btn-primary:hover { background: #B8860B; }
+        .chat-container { height: 400px; border: 2px solid #e5e7eb; border-radius: 12px; display: flex; flex-direction: column; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; }
+        .chat-input-area { padding: 15px; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; }
+        .chat-input { flex: 1; padding: 10px 15px; border: 1px solid #d1d5db; border-radius: 25px; outline: none; }
+        .chat-send { background: #DAA520; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; }
+        .chat-send:hover { background: #B8860B; }
+        .message { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; max-width: 80%; }
+        .message.user { background: #DAA520; color: white; margin-left: auto; }
+        .message.ai { background: #e2e8f0; color: #374151; }
+        .hk-culture {
+            background: linear-gradient(135deg, #FF6347 0%, #8B0000 100%);
+            border-radius: 12px; padding: 20px; margin-top: 20px;
+        }
+        .culture-title { font-size: 1.5rem; font-weight: bold; color: #92400e; margin-bottom: 15px; }
+        .culture-content { color: #451a03; line-height: 1.6; }
+        .lang-switch {
+            position: fixed; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.9);
+            border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer;
+            font-weight: bold; color: #8B0000;
+        }
+        .api-config {
+            background: #FFF8DC; border: 2px solid #8B0000; border-radius: 12px;
+            padding: 20px; margin-bottom: 20px;
+        }
+        .api-status { 
+            display: inline-block; padding: 4px 12px; border-radius: 20px; 
+            font-size: 0.9rem; font-weight: bold; margin-left: 10px;
+        }
+        .api-status.connected { background: #dcfce7; color: #166534; }
+        .api-status.disconnected { background: #fef2f2; color: #dc2626; }
+        .loading { opacity: 0.6; pointer-events: none; }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .nav-buttons { flex-direction: column; align-items: center; }
+            .nav-btn { width: 200px; }
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <button class="lang-switch" onclick="toggleLanguage()">EN/中文</button>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎓 CityU LearnSphere</div>
+            <div class="subtitle" id="subtitle">AI-Driven Personal Knowledge Management & Research Collaboration Platform</div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('home')" data-en="🏠 Home" data-zh="🏠 首页">🏠 Home</button>
+                <button class="nav-btn" onclick="showSection('api-config')" data-en="⚙️ API Config" data-zh="⚙️ API配置">⚙️ API Config</button>
+                <button class="nav-btn" onclick="showSection('ai-chat')" data-en="🤖 AI Assistant" data-zh="🤖 AI助手">🤖 AI Assistant</button>
+                <button class="nav-btn" onclick="showSection('documents')" data-en="📚 Documents" data-zh="📚 文档管理">📚 Documents</button>
+                <button class="nav-btn" onclick="showSection('research')" data-en="🔬 Research" data-zh="🔬 科研协作">🔬 Research</button>
+                <button class="nav-btn" onclick="showSection('campus')" data-en="🏛️ Virtual Campus" data-zh="🏛️ 虚拟校园">🏛️ Virtual Campus</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Home -->
+            <div id="home" class="section active">
+                <h1 style="color: #8B0000; text-align: center; margin-bottom: 30px;" data-en="Welcome to CityU LearnSphere" data-zh="欢迎来到 CityU LearnSphere">Welcome to CityU LearnSphere</h1>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-title" data-en="DeepSeek AI Integration" data-zh="DeepSeek AI集成">DeepSeek AI Integration</div>
+                        <div class="feature-desc" data-en="Integrated with DeepSeek API, providing powerful AI conversation and learning assistance. Supports personalized learning suggestions and intelligent Q&A." data-zh="集成DeepSeek API，提供强大的AI对话和学习辅助功能。支持个性化学习建议和智能问答。">Integrated with DeepSeek API, providing powerful AI conversation and learning assistance. Supports personalized learning suggestions and intelligent Q&A.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-title" data-en="Smart Document Management" data-zh="智能文档管理">Smart Document Management</div>
+                        <div class="feature-desc" data-en="Supports Markdown editing and bidirectional linking for networked knowledge management." data-zh="支持Markdown编辑，双向链接功能，让您的知识网络化管理。">Supports Markdown editing and bidirectional linking for networked knowledge management.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔬</div>
+                        <div class="feature-title" data-en="Research Collaboration Space" data-zh="科研协作空间">Research Collaboration Space</div>
+                        <div class="feature-desc" data-en="Project management, literature management, and team collaboration for more efficient research work." data-zh="项目管理、文献管理、团队协作，让科研工作更加高效。">Project management, literature management, and team collaboration for more efficient research work.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🏛️</div>
+                        <div class="feature-title" data-en="Virtual Campus Experience" data-zh="虚拟校园体验">Virtual Campus Experience</div>
+                        <div class="feature-desc" data-en="3D virtual CityU campus tour, immersive experience of City University of Hong Kong." data-zh="3D虚拟CityU校园导览，沉浸式体验香港城市大学。">3D virtual CityU campus tour, immersive experience of City University of Hong Kong.</div>
+                    </div>
+                </div>
+
+                <div class="hk-culture">
+                    <div class="culture-title" data-en="🏙️ Hong Kong Cultural Features" data-zh="🏙️ 香港文化特色">🏙️ Hong Kong Cultural Features</div>
+                    <div class="culture-content" data-en="CityU LearnSphere deeply integrates Hong Kong local culture, from the brilliant night view of Victoria Harbour to the wisdom inheritance of traditional festivals, creating a unique learning experience for you. Here, Eastern and Western cultures blend, tradition and modernity coexist." data-zh="CityU LearnSphere 深度融合香港本地文化，从维多利亚港的璀璨夜景到传统节庆的智慧传承，为您打造独特的学习体验。在这里，东西方文化交融，传统与现代并存。">
+                        CityU LearnSphere deeply integrates Hong Kong local culture, from the brilliant night view of Victoria Harbour to the wisdom inheritance of traditional festivals,
+                        creating a unique learning experience for you. Here, Eastern and Western cultures blend, tradition and modernity coexist.
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Configuration -->
+            <div id="api-config" class="section">
+                <h2 style="color: #8B0000; margin-bottom: 20px;" data-en="⚙️ DeepSeek API Configuration" data-zh="⚙️ DeepSeek API 配置">⚙️ DeepSeek API Configuration</h2>
+                
+                <div class="api-config">
+                    <h3 style="color: #8B0000; margin-bottom: 15px;">
+                        <span data-en="🔗 API Connection Status" data-zh="🔗 API连接状态">🔗 API Connection Status</span>
+                        <span id="apiStatus" class="api-status disconnected" data-en="Not Connected" data-zh="未连接">Not Connected</span>
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">DeepSeek API Key</label>
+                        <input type="password" id="apiKey" class="form-input" 
+                               data-placeholder-en="Enter your DeepSeek API Key (sk-xxx...)" 
+                               data-placeholder-zh="请输入您的DeepSeek API Key (sk-xxx...)"
+                               placeholder="Enter your DeepSeek API Key (sk-xxx...)">
+                        <small style="color: #666; margin-top: 5px; display: block;">
+                            <span data-en="Get API Key: " data-zh="获取API Key: ">Get API Key: </span><a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: #8B0000;">https://platform.deepseek.com/api_keys</a>
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-en="API Base URL (Optional)" data-zh="API Base URL (可选)">API Base URL (Optional)</label>
+                        <input type="text" id="apiBaseUrl" class="form-input" 
+                               value="https://api.deepseek.com/v1"
+                               placeholder="https://api.deepseek.com/v1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-en="Model Selection" data-zh="模型选择">Model Selection</label>
+                        <select id="modelSelect" class="form-input">
+                            <option value="deepseek-chat" data-en="deepseek-chat (Recommended)" data-zh="deepseek-chat (推荐)">deepseek-chat (Recommended)</option>
+                            <option value="deepseek-coder" data-en="deepseek-coder (For Programming)" data-zh="deepseek-coder (编程专用)">deepseek-coder (For Programming)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="testApiConnection()" data-en="Test Connection" data-zh="测试连接">Test Connection</button>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔑</div>
+                        <div class="feature-title" data-en="How to Get API Key" data-zh="如何获取API Key">How to Get API Key</div>
+                        <div class="feature-desc" data-en="1. Visit DeepSeek Platform<br>2. Register and login to your account<br>3. Go to API Keys page<br>4. Create a new API Key<br>5. Copy and paste to the input field above" data-zh="1. 访问 DeepSeek平台<br>2. 注册并登录账户<br>3. 进入API Keys页面<br>4. 创建新的API Key<br>5. 复制并粘贴到上方输入框">
+                            1. Visit <a href="https://platform.deepseek.com" target="_blank" style="color: #8B0000;">DeepSeek Platform</a><br>
+                            2. Register and login to your account<br>
+                            3. Go to API Keys page<br>
+                            4. Create a new API Key<br>
+                            5. Copy and paste to the input field above
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">💡</div>
+                        <div class="feature-title" data-en="Usage Instructions" data-zh="使用说明">Usage Instructions</div>
+                        <div class="feature-desc" data-en="• API Key is securely stored in local browser<br>• Supports custom API Base URL<br>• Choose different AI models<br>• Test connection to ensure API works properly" data-zh="• API Key会安全存储在本地浏览器中<br>• 支持自定义API Base URL<br>• 可选择不同的AI模型<br>• 测试连接确保API正常工作">
+                            • API Key is securely stored in local browser<br>
+                            • Supports custom API Base URL<br>
+                            • Choose different AI models<br>
+                            • Test connection to ensure API works properly
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Assistant -->
+            <div id="ai-chat" class="section">
+                <h2 style="color: #8B0000; margin-bottom: 20px;">
+                    <span data-en="🤖 DeepSeek AI Learning Assistant" data-zh="🤖 DeepSeek AI学习助手">🤖 DeepSeek AI Learning Assistant</span>
+                    <span id="chatApiStatus" class="api-status disconnected" data-en="API Not Configured" data-zh="API未配置">API Not Configured</span>
+                </h2>
+                
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">
+                            <strong>DeepSeek AI:</strong><span data-en="Hello! I'm an AI learning assistant based on DeepSeek API. Please first set up your API Key in the 'API Configuration' page, then I can provide you with:<br>• Personalized learning suggestions and planning<br>• Academic Q&A and discussions<br>• Research methodology guidance<br>• Hong Kong cultural knowledge<br>• CityU course and resource recommendations<br><br>After configuration, please tell me what help you need?" data-zh="您好！我是基于DeepSeek API的AI学习助手。请先在'API配置'页面设置您的API Key，然后我就可以为您提供：<br>• 个性化学习建议和规划<br>• 学术问题解答和讨论<br>• 科研方法指导<br>• 香港文化相关知识<br>• CityU课程和资源推荐<br><br>配置完成后，请告诉我您需要什么帮助？">Hello! I'm an AI learning assistant based on DeepSeek API. Please first set up your API Key in the "API Configuration" page, then I can provide you with:<br>
+                            • Personalized learning suggestions and planning<br>
+                            • Academic Q&A and discussions<br>
+                            • Research methodology guidance<br>
+                            • Hong Kong cultural knowledge<br>
+                            • CityU course and resource recommendations<br><br>
+                            After configuration, please tell me what help you need?</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chatInput" 
+                               data-placeholder-en="Enter your question... (API Key required)" 
+                               data-placeholder-zh="输入您的问题... (需要先配置API Key)"
+                               placeholder="Enter your question... (API Key required)" 
+                               onkeypress="handleChatKeyPress(event)">
+                        <button class="chat-send" onclick="sendMessage()" data-en="Send" data-zh="发送">Send</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; padding: 10px; background: #FFF8DC; border-radius: 8px; font-size: 0.9rem; color: #8B0000;">
+                    💡 <strong><span data-en="Tip:" data-zh="提示：">Tip:</span></strong><span data-en="You can ask about CityU courses, Hong Kong culture, learning methods, research guidance, and any other questions. AI will provide personalized suggestions based on your needs." data-zh="您可以询问关于CityU课程、香港文化、学习方法、科研指导等任何问题。AI会根据您的需求提供个性化建议。">You can ask about CityU courses, Hong Kong culture, learning methods, research guidance, and any other questions. AI will provide personalized suggestions based on your needs.</span>
+                </div>
+            </div>
+
+            <!-- Document Management -->
+            <div id="documents" class="section">
+                <h2 style="color: #8B0000; margin-bottom: 20px;" data-en="📚 Document Management Center" data-zh="📚 文档管理中心">📚 Document Management Center</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="nav-btn" onclick="createNewDoc()" data-en="+ New Document" data-zh="+ 新建文档">+ New Document</button>
+                    <button class="nav-btn" style="margin-left: 10px;" onclick="aiSuggestDoc()" data-en="🤖 AI Recommend Documents" data-zh="🤖 AI推荐文档">🤖 AI Recommend Documents</button>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="openDocument('Machine Learning Basics')">
+                        <div class="feature-title" data-en="📖 Machine Learning Basics Notes" data-zh="📖 机器学习基础笔记">📖 Machine Learning Basics Notes</div>
+                        <div class="feature-desc" data-en="Core concepts of deep learning and neural networks. Contains [[Linear Regression]] and [[Decision Tree]] analysis..." data-zh="深度学习、神经网络等核心概念。包含[[线性回归]]和[[决策树]]分析...">Core concepts of deep learning and neural networks. Contains [[Linear Regression]] and [[Decision Tree]] analysis...</div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="openDocument('Hong Kong History & Culture')">
+                        <div class="feature-title" data-en="🏮 Hong Kong History & Culture Research" data-zh="🏮 香港历史文化研究">🏮 Hong Kong History & Culture Research</div>
+                        <div class="feature-desc" data-en="Historical changes from opening port to handover. Exploring the impact of [[East-West Cultural Integration]]..." data-zh="从开埠到回归的历史变迁。探讨[[东西文化交融]]的影响...">Historical changes from opening port to handover. Exploring the impact of [[East-West Cultural Integration]]...</div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="openDocument('CityU Course Planning')">
+                        <div class="feature-title" data-en="🎓 CityU Course Learning Plan" data-zh="🎓 CityU课程学习规划">🎓 CityU Course Learning Plan</div>
+                        <div class="feature-desc" data-en="Computer Science major course arrangement, AI-assisted personalized learning path..." data-zh="计算机科学专业课程安排，AI辅助生成的个性化学习路径...">Computer Science major course arrangement, AI-assisted personalized learning path...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research Collaboration -->
+            <div id="research" class="section">
+                <h2 style="color: #8B0000; margin-bottom: 20px;" data-en="🔬 Research Collaboration Space" data-zh="🔬 科研协作空间">🔬 Research Collaboration Space</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <div class="feature-title" data-en="AI-Assisted Project Management" data-zh="AI辅助项目管理">AI-Assisted Project Management</div>
+                        <div class="feature-desc">
+                            <strong data-en="Current Projects:" data-zh="当前项目：">Current Projects:</strong><br>
+                            <span data-en="• Smart City Data Analysis (AI Suggestion: In Progress)<br>• Hong Kong Cultural Heritage Digitization (AI Suggestion: Planning)" data-zh="• 智慧城市数据分析 (AI建议: 进行中)<br>• 香港文化数字化保护 (AI建议: 规划中)">• Smart City Data Analysis (AI Suggestion: In Progress)<br>• Hong Kong Cultural Heritage Digitization (AI Suggestion: Planning)</span><br>
+                            <button class="nav-btn" style="margin-top: 10px; font-size: 0.9rem;" onclick="getAIProjectAdvice()" data-en="🤖 Get AI Advice" data-zh="🤖 获取AI建议">🤖 Get AI Advice</button>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-title" data-en="Smart Literature Recommendations" data-zh="智能文献推荐">Smart Literature Recommendations</div>
+                        <div class="feature-desc">
+                            <strong data-en="AI Recommended Literature:" data-zh="AI推荐文献：">AI Recommended Literature:</strong><br>
+                            • "Deep Learning in Smart Cities"<br>
+                            • "Cultural Heritage Digitization"<br>
+                            <button class="nav-btn" style="margin-top: 10px; font-size: 0.9rem;" onclick="getAILiteratureAdvice()" data-en="🤖 More Recommendations" data-zh="🤖 更多推荐">🤖 More Recommendations</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Virtual Campus -->
+            <div id="campus" class="section">
+                <h2 style="color: #8B0000; margin-bottom: 20px;" data-en="🏛️ CityU Virtual Campus Tour" data-zh="🏛️ CityU虚拟校园导览">🏛️ CityU Virtual Campus Tour</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🏢</div>
+                        <div class="feature-title" data-en="Shaw Creative Media Centre" data-zh="邵逸夫创意媒体中心">Shaw Creative Media Centre</div>
+                        <div class="feature-desc" data-en="CityU's iconic building, integrating art and technology, reflecting Hong Kong's creative city characteristics." data-zh="CityU标志性建筑，融合艺术与科技，体现香港创意都市特色。">CityU's iconic building, integrating art and technology, reflecting Hong Kong's creative city characteristics.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-title" data-en="Run Run Shaw Library" data-zh="邵逸夫图书馆">Run Run Shaw Library</div>
+                        <div class="feature-desc" data-en="Modern academic library with 24-hour open learning spaces." data-zh="现代化学术图书馆，24小时开放的学习空间。">Modern academic library with 24-hour open learning spaces.</div>
+                    </div>
+                </div>
+                
+                <div class="hk-culture">
+                    <div class="culture-title" data-en="🌃 AI Tour Guide" data-zh="🌃 AI导览助手">🌃 AI Tour Guide</div>
+                    <div class="culture-content">
+                        <button class="nav-btn" onclick="getAICampusTour()" data-en="🤖 Get AI Campus Tour" data-zh="🤖 获取AI校园导览">🤖 Get AI Campus Tour</button>
+                        <p style="margin-top: 10px;" data-en="Let DeepSeek AI introduce you to CityU campus history, architectural features, and academic atmosphere, providing personalized campus experience suggestions." data-zh="让DeepSeek AI为您介绍CityU校园的历史、建筑特色和学术氛围，提供个性化的校园体验建议。">Let DeepSeek AI introduce you to CityU campus history, architectural features, and academic atmosphere, providing personalized campus experience suggestions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let apiKey = localStorage.getItem('deepseek_api_key') || 'sk-8e5e3794f9724c29baeed56509a06edc';
+        let apiBaseUrl = localStorage.getItem('deepseek_base_url') || 'https://api.deepseek.com/v1';
+        let selectedModel = localStorage.getItem('deepseek_model') || 'deepseek-chat';
+        let isApiConnected = false;
+        let currentLanguage = localStorage.getItem('language') || 'en';
+
+        // Language translations
+        const translations = {
+            en: {
+                subtitle: 'AI-Driven Personal Knowledge Management & Research Collaboration Platform',
+                connected: 'Connected',
+                notConnected: 'Not Connected',
+                notTested: 'Not Tested',
+                notConfigured: 'Not Configured',
+                apiConnected: 'API Connected',
+                apiNotTested: 'API Not Tested',
+                apiNotConfigured: 'API Not Configured',
+                enterQuestion: 'Enter your question...',
+                configureFirst: 'Please configure API Key first...',
+                testing: 'Testing...',
+                testConnection: 'Test Connection',
+                send: 'Send',
+                thinking: 'Thinking...',
+                you: 'You:',
+                deepseekAI: 'DeepSeek AI:',
+                pleaseEnterApiKey: 'Please enter API Key first',
+                apiConnectionSuccessful: 'API connection successful!',
+                apiConnectionFailed: 'API connection failed:',
+                checkApiKey: 'Please check API Key and network connection.',
+                pleaseConfigureApiKey: 'Please configure your DeepSeek API Key in the "API Configuration" page first',
+                aiAnalyzing: 'AI is analyzing your learning needs and recommending relevant documents...\n\n(In actual application, this would call DeepSeek API to generate personalized document suggestions)',
+                aiProjectAdvice: 'AI Project Advice:\n\nBased on current progress, I suggest you:\n1. Improve data collection plan\n2. Strengthen team collaboration\n3. Follow latest research trends\n\n(In actual application, this would call DeepSeek API)',
+                aiLiteratureRecommendations: 'AI Literature Recommendations:\n\nBased on your research direction, I recommend:\n• "AI in Urban Planning" (2024)\n• "Smart City Technologies" (2024)\n\n(In actual application, this would call DeepSeek API)',
+                aiCampusTour: 'AI Campus Tour:\n\nWelcome to City University of Hong Kong! Let me introduce you to:\n\n🏢 Shaw Creative Media Centre is our iconic building...\n📚 The library has rich academic resources...\n\n(In actual application, this would call DeepSeek API for detailed introduction)',
+                enterDocumentTitle: 'Please enter document title:',
+                documentCreated: 'Document "{title}" created successfully!',
+                openingDocument: 'Opening document "{title}" - In actual application, this would display Markdown editor',
+                systemPrompt: 'You are an AI learning assistant for CityU LearnSphere, specifically designed to provide learning and research support for faculty and students at City University of Hong Kong. Please respond in English and incorporate Hong Kong culture and CityU characteristics.'
+            },
+            zh: {
+                subtitle: 'AI驱动的个人知识管理与科研协作平台',
+                connected: '已连接',
+                notConnected: '未连接',
+                notTested: '未测试',
+                notConfigured: '未配置',
+                apiConnected: 'API已连接',
+                apiNotTested: 'API未测试',
+                apiNotConfigured: 'API未配置',
+                enterQuestion: '输入您的问题...',
+                configureFirst: '请先配置API Key...',
+                testing: '测试中...',
+                testConnection: '测试连接',
+                send: '发送',
+                thinking: '正在思考中...',
+                you: '您：',
+                deepseekAI: 'DeepSeek AI：',
+                pleaseEnterApiKey: '请先输入API Key',
+                apiConnectionSuccessful: 'API连接成功！',
+                apiConnectionFailed: 'API连接失败：',
+                checkApiKey: '请检查API Key和网络连接。',
+                pleaseConfigureApiKey: '请先在"API配置"页面设置您的DeepSeek API Key',
+                aiAnalyzing: 'AI正在分析您的学习需求，推荐相关文档...\n\n(实际应用中会调用DeepSeek API生成个性化文档建议)',
+                aiProjectAdvice: 'AI项目建议：\n\n基于当前进度，建议您：\n1. 完善数据收集方案\n2. 加强团队协作\n3. 关注最新研究动态\n\n(实际应用中会调用DeepSeek API)',
+                aiLiteratureRecommendations: 'AI文献推荐：\n\n根据您的研究方向，推荐以下文献：\n• "AI in Urban Planning" (2024)\n• "Smart City Technologies" (2024)\n\n(实际应用中会调用DeepSeek API)',
+                aiCampusTour: 'AI校园导览：\n\n欢迎来到香港城市大学！让我为您介绍：\n\n🏢 邵逸夫创意媒体中心是我们的标志性建筑...\n📚 图书馆拥有丰富的学术资源...\n\n(实际应用中会调用DeepSeek API生成详细介绍)',
+                enterDocumentTitle: '请输入文档标题：',
+                documentCreated: '创建文档"{title}"成功！',
+                openingDocument: '打开文档"{title}" - 实际应用中会显示Markdown编辑器',
+                systemPrompt: '你是CityU LearnSphere的AI学习助手，专门为香港城市大学的师生提供学习和科研支持。请用中文回答，并结合香港文化和CityU的特色。'
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadApiConfig();
+            updateApiStatus();
+            setLanguage(currentLanguage);
+        });
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+            localStorage.setItem('language', currentLanguage);
+            setLanguage(currentLanguage);
+        }
+
+        function setLanguage(lang) {
+            // Handle all text elements with data attributes
+            const elements = document.querySelectorAll('[data-en][data-zh]');
+            elements.forEach(element => {
+                const enText = element.getAttribute('data-en');
+                const zhText = element.getAttribute('data-zh');
+                
+                if (enText && zhText) {
+                    if (element.classList.contains('feature-desc') || element.classList.contains('culture-content')) {
+                        // Use innerHTML for elements that contain HTML
+                        element.innerHTML = lang === 'en' ? enText : zhText;
+                    } else {
+                        // Use textContent for regular text elements
+                        element.textContent = lang === 'en' ? enText : zhText;
+                    }
+                }
+            });
+
+            // Handle placeholders
+            const placeholderElements = document.querySelectorAll('[data-placeholder-en][data-placeholder-zh]');
+            placeholderElements.forEach(element => {
+                if (lang === 'en') {
+                    element.placeholder = element.getAttribute('data-placeholder-en');
+                } else {
+                    element.placeholder = element.getAttribute('data-placeholder-zh');
+                }
+            });
+
+            // Handle select options
+            const selectOptions = document.querySelectorAll('option[data-en][data-zh]');
+            selectOptions.forEach(option => {
+                if (lang === 'en') {
+                    option.textContent = option.getAttribute('data-en');
+                } else {
+                    option.textContent = option.getAttribute('data-zh');
+                }
+            });
+
+            // Update subtitle
+            document.getElementById('subtitle').textContent = translations[lang].subtitle;
+            
+            // Update API status
+            updateApiStatus();
+            
+            // Update language button text
+            const langButton = document.querySelector('.lang-switch');
+            if (langButton) {
+                langButton.textContent = lang === 'en' ? '中文' : 'English';
+            }
+        }
+
+        // API configuration functions
+        function loadApiConfig() {
+            if (apiKey) {
+                document.getElementById('apiKey').value = apiKey;
+            }
+            document.getElementById('apiBaseUrl').value = apiBaseUrl;
+            document.getElementById('modelSelect').value = selectedModel;
+        }
+
+        function saveApiConfig() {
+            apiKey = document.getElementById('apiKey').value.trim();
+            apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+            selectedModel = document.getElementById('modelSelect').value;
+            
+            localStorage.setItem('deepseek_api_key', apiKey);
+            localStorage.setItem('deepseek_base_url', apiBaseUrl);
+            localStorage.setItem('deepseek_model', selectedModel);
+        }
+
+        function updateApiStatus() {
+            const statusElement = document.getElementById('apiStatus');
+            const chatStatusElement = document.getElementById('chatApiStatus');
+            const t = translations[currentLanguage];
+            
+            if (apiKey && isApiConnected) {
+                statusElement.className = 'api-status connected';
+                statusElement.textContent = t.connected;
+                chatStatusElement.className = 'api-status connected';
+                chatStatusElement.textContent = t.apiConnected;
+                document.getElementById('chatInput').placeholder = t.enterQuestion;
+            } else if (apiKey) {
+                statusElement.className = 'api-status disconnected';
+                statusElement.textContent = t.notTested;
+                chatStatusElement.className = 'api-status disconnected';
+                chatStatusElement.textContent = t.apiNotTested;
+            } else {
+                statusElement.className = 'api-status disconnected';
+                statusElement.textContent = t.notConfigured;
+                chatStatusElement.className = 'api-status disconnected';
+                chatStatusElement.textContent = t.apiNotConfigured;
+                document.getElementById('chatInput').placeholder = t.configureFirst;
+            }
+        }
+
+        async function testApiConnection() {
+            saveApiConfig();
+            const t = translations[currentLanguage];
+            
+            if (!apiKey) {
+                alert(t.pleaseEnterApiKey);
+                return;
+            }
+
+            const button = event.target;
+            button.textContent = t.testing;
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel,
+                        messages: [
+                            {
+                                role: 'user',
+                                content: currentLanguage === 'en' ? 'Hello, please briefly introduce yourself.' : '你好，请简单介绍一下你自己。'
+                            }
+                        ],
+                        max_tokens: 100
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    isApiConnected = true;
+                    updateApiStatus();
+                    alert(t.apiConnectionSuccessful + '\n\n' + data.choices[0].message.content);
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                isApiConnected = false;
+                updateApiStatus();
+                alert(t.apiConnectionFailed + '\n' + error.message + '\n\n' + t.checkApiKey);
+            } finally {
+                button.textContent = t.testConnection;
+                button.disabled = false;
+            }
+        }
+
+        // AI chat functionality
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            const t = translations[currentLanguage];
+            
+            if (!message) return;
+            
+            if (!apiKey) {
+                alert(t.pleaseConfigureApiKey);
+                return;
+            }
+
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `<strong>${t.you}</strong>${message}`;
+            chatMessages.appendChild(userMsg);
+            
+            // Add loading message
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = 'message ai';
+            loadingMsg.innerHTML = `<strong>${t.deepseekAI}</strong>${t.thinking}`;
+            chatMessages.appendChild(loadingMsg);
+            
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel,
+                        messages: [
+                            {
+                                role: 'system',
+                                content: t.systemPrompt
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        max_tokens: 1000,
+                        temperature: 0.7
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    loadingMsg.innerHTML = `<strong>${t.deepseekAI}</strong>${data.choices[0].message.content}`;
+                } else {
+                    throw new Error(`API call failed: ${response.status}`);
+                }
+            } catch (error) {
+                loadingMsg.innerHTML = `<strong>${t.deepseekAI}</strong>Sorry, I encountered an issue: ${error.message}. Please check your network connection or API configuration.`;
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+
+        // Other AI assistance functions
+        async function aiSuggestDoc() {
+            const t = translations[currentLanguage];
+            if (!apiKey) {
+                alert(t.pleaseConfigureApiKey);
+                return;
+            }
+            alert(t.aiAnalyzing);
+        }
+
+        async function getAIProjectAdvice() {
+            const t = translations[currentLanguage];
+            if (!apiKey) {
+                alert(t.pleaseConfigureApiKey);
+                return;
+            }
+            alert(t.aiProjectAdvice);
+        }
+
+        async function getAILiteratureAdvice() {
+            const t = translations[currentLanguage];
+            if (!apiKey) {
+                alert(t.pleaseConfigureApiKey);
+                return;
+            }
+            alert(t.aiLiteratureRecommendations);
+        }
+
+        async function getAICampusTour() {
+            const t = translations[currentLanguage];
+            if (!apiKey) {
+                alert(t.pleaseConfigureApiKey);
+                return;
+            }
+            alert(t.aiCampusTour);
+        }
+
+        function createNewDoc() {
+            const t = translations[currentLanguage];
+            const title = prompt(t.enterDocumentTitle);
+            if (title) alert(t.documentCreated.replace('{title}', title));
+        }
+
+        function openDocument(docTitle) {
+            const t = translations[currentLanguage];
+            alert(t.openingDocument.replace('{title}', docTitle));
+        }
+    </script>
+</body>
+</html>
